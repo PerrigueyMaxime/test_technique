@@ -8,30 +8,69 @@ Created on Mon Jun 12 16:20:27 2023
     
 
 import unittest
-from flask import Flask, render_template
-from main import MyApp
+import pandas as pd
+from itertools import chain
+from data_processor import DataProcessor
+from config import Config
 
-class MyAppTestCase(unittest.TestCase):
+config_path = "/Users/user/Documents/etude_de_cas_edf/config/config_file.yaml"  
+
+class TestDataProcessor(unittest.TestCase):
+
     def setUp(self):
-        self.app = MyApp('/Users/user/Documents/etude_de_cas_edf/config/config_file.yaml', __name__)
+        # Initialize test data
+        self.config = Config(config_path)
+        
+        self.data = [
+            {
+                "actual_generations_per_unit": [
+                    {
+                        "values": [
+                            {"start_date": "2022-01-01", "value": 10},
+                            {"start_date": "2022-01-02", "value": 15}
+                        ]
+                    }
+                ]
+            },
+            {
+                "actual_generations_per_unit": [
+                    {
+                        "values": [
+                            {"start_date": "2022-01-01", "value": 20},
+                            {"start_date": "2022-01-02", "value": 25}
+                        ]
+                    }
+                ]
+            }
+        ]
+        self.data_processor = DataProcessor(self.config, self.data)
 
-    def tearDown(self):
-        pass
+    def test_extract_data_for_study(self):
+        expected_result = pd.DataFrame([
+            {"start_date": "2022-01-01", "value": 10},
+            {"start_date": "2022-01-02", "value": 15},
+            {"start_date": "2022-01-01", "value": 20},
+            {"start_date": "2022-01-02", "value": 25}
+        ])
+        result = self.data_processor.extract_data_for_study()
+        pd.testing.assert_frame_equal(result, expected_result)
 
-    def test_index_route(self):
-        with self.app.test_client() as client:
-            response = client.get('/')
-            print(response)
-            self.assertEqual(response.status_code, 200)
-            self.assertEqual(response.content_type, 'text/html; charset=utf-8')
-            self.assertIsInstance(response.data, bytes)
-            self.assertIn(b'<title>MyApp</title>', response.data)
+    def test_compute_hour_to_hour_mean(self):
+        expected_result = pd.DataFrame([
+            {"start_date": pd.to_datetime("2022-01-01"), "average_daily_production": 15.0, "sum_of_daily_production": 30},
+            {"start_date": pd.to_datetime("2022-01-02"), "average_daily_production": 20.0, "sum_of_daily_production": 40}
+        ])
+        result = self.data_processor.compute_hour_to_hour_mean()
+        pd.testing.assert_frame_equal(result, expected_result)
 
-    def test_index_render_template(self):
-        with self.app.app_context():
-            rendered_template = render_template('rendu_js.html', data=...)
-            self.assertIsNotNone(rendered_template)
-            # Effectuez d'autres vérifications sur le contenu de la template si nécessaire
+    def test_data_to_json(self):
+        expected_result = [
+            {"start_date": pd.to_datetime("2022-01-01"), "sum_of_daily_production": 30},
+            {"start_date": pd.to_datetime("2022-01-02"), "sum_of_daily_production": 40}
+        ]
+        df = self.data_processor.compute_hour_to_hour_mean()
+        result = self.data_processor.data_to_json(df)
+        self.assertEqual(result, expected_result)
 
 if __name__ == '__main__':
     unittest.main()

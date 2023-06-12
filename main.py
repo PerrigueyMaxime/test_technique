@@ -33,7 +33,7 @@ class MyApp(Flask):
         return render_template('rendu_js.html',data=data)
 
 # path for the yaml config file
-config_path = "/Users/user/Documents/etude_de_cas_edf/config/config_file.yaml"    
+config_path = "/Users/user/Documents/test_technique/config/config_file.yaml"    
 app = MyApp(config_path, __name__)
 app.route('/')(MyApp.index)
 
