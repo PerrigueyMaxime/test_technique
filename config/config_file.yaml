@@ -1,7 +1,7 @@
 authorization_url: "https://digital.iservices.rte-france.com/token/oauth/"
 api_url: "https://digital.iservices.rte-france.com/open_api/actual_generation/v1/actual_generations_per_unit"
 content_type: "application/x-www-form-urlencoded"
-authorization: "Basic NzFjMTI0NWItOTJhNi00ZWJmLThhMjgtYTMzNGUzYjk0ZGQxOjkwMTNkOTJmLWJiODgtNDViNi1hMGE4LTYyZmQ3ZWQ0ZTdiNw=="
+authorization: "Basic your_client_and_secret_id_in_64"
 
 data_name: "actual_generations_per_unit"
 values: "values"
