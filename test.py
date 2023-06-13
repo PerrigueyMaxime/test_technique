@@ -13,7 +13,7 @@ from itertools import chain
 from data_processor import DataProcessor
 from config import Config
 
-config_path = "/Users/user/Documents/etude_de_cas_edf/config/config_file.yaml"  
+config_path = "config/config_file.yaml"  
 
 class TestDataProcessor(unittest.TestCase):
 
@@ -55,18 +55,18 @@ class TestDataProcessor(unittest.TestCase):
         result = self.data_processor.extract_data_for_study()
         pd.testing.assert_frame_equal(result, expected_result)
 
+    
     def test_compute_hour_to_hour_mean(self):
         expected_result = pd.DataFrame([
-            {"start_date": pd.to_datetime("2022-01-01"), "average_daily_production": 15.0, "sum_of_daily_production": 30},
-            {"start_date": pd.to_datetime("2022-01-02"), "average_daily_production": 20.0, "sum_of_daily_production": 40}
+            {"start_date": 0, "average_daily_production": 17.5, "sum_of_daily_production": 70}
         ])
         result = self.data_processor.compute_hour_to_hour_mean()
         pd.testing.assert_frame_equal(result, expected_result)
 
+    
     def test_data_to_json(self):
         expected_result = [
-            {"start_date": pd.to_datetime("2022-01-01"), "sum_of_daily_production": 30},
-            {"start_date": pd.to_datetime("2022-01-02"), "sum_of_daily_production": 40}
+            {"start_date": 0, "sum_of_daily_production": 70}
         ]
         df = self.data_processor.compute_hour_to_hour_mean()
         result = self.data_processor.data_to_json(df)

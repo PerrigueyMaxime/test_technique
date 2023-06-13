@@ -21,8 +21,6 @@ class Config:
         self.content_type = self.config.get("content_type")
         self.authorization = self.config.get("authorization")
 
-        self.start_date = self.config.get("start_date")
-        self.end_date = self.config.get("end_date")
         self.max_chunk = self.config.get("max_chunk")
         self.data_name = self.config.get("data_name")
         self.value = self.config.get("value")

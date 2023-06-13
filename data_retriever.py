@@ -34,13 +34,11 @@ class DataRetriever:
         access_token = json.loads(authorization_code.decode('utf-8'))["access_token"]
         return access_token
 
-    def period_into_subsets(self, max_chunk):
-        start_date = datetime.strptime(self.config.start_date, '%Y-%m-%dT%H:%M:%S')
-        end_date = datetime.strptime(self.config.end_date, '%Y-%m-%dT%H:%M:%S')
+    def period_into_subsets(self, start_date, end_date, max_chunk):
         periods = []
     
         current_date = start_date
-        while current_date <= end_date:
+        while current_date < end_date:
             period_end_date = current_date + timedelta(days=max_chunk)
             if period_end_date > end_date:
                 period_end_date = end_date
@@ -56,6 +54,7 @@ class DataRetriever:
         return int(offset.seconds/3600)
     
     def build_url(self, start_date, end_date):
+        print(f"start_date: {start_date}, end_date: {end_date}")
         utc_offset = DataRetriever.get_timezone(start_date)
         offset_for_date = f"%2B0{utc_offset}:00"
         start_date = start_date.strftime('%Y-%m-%dT%H:%M:%S') + offset_for_date
@@ -63,12 +62,13 @@ class DataRetriever:
         url = self.config.api_url + f"?start_date={start_date}&end_date={end_date}"
         return url
     
-    def get_data_api(self, max_chunk):
+    def get_data_api(self, start_date, end_date, max_chunk):
         access_token = self.get_access_token()
         headers = {
             'Authorization': 'Bearer ' + access_token
         }
-        periods = self.period_into_subsets(max_chunk)
+        print(start_date, end_date)
+        periods = self.period_into_subsets(start_date, end_date, max_chunk)
         data = [
             requests.get(self.build_url(date[0], date[1]), headers=headers)
             .json() 

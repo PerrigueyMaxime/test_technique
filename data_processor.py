@@ -17,9 +17,9 @@ class DataProcessor:
         
     def extract_data_for_study(self):
         # the retrieved data are in a json, here we retrieve the needed data
+        # print(self.data)
         all_data = sum([data[self.config.data_name] for data in self.data], [])
         # data is a list of dictionnary and we just want to retrieve "values"
-        # data
         needed_data = [value[self.config.values] for value in all_data]
         # the needed data is a list of list of dictionnary, we just want a 
         # list of dictionnary so that we can transform it into a pandas
@@ -30,10 +30,10 @@ class DataProcessor:
     def compute_hour_to_hour_mean(self):
         data = self.extract_data_for_study()
         pivot_column = self.config.pivot_column
+        # get hour of the day
+        data[pivot_column] = data[pivot_column].apply(lambda date: pd.to_datetime(date).hour)
         # we compute the mean and sum of electricity production as asked
         hour_to_hour_mean = data.groupby(pivot_column)[self.config.value].agg(["mean","sum"]).reset_index()
-        # cast string into date
-        hour_to_hour_mean[pivot_column] = pd.to_datetime(hour_to_hour_mean.start_date)
         # change the column names so that it is clearer
         hour_to_hour_mean.columns = [pivot_column, "average_daily_production", "sum_of_daily_production"]
         return hour_to_hour_mean

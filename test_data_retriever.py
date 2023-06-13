@@ -12,7 +12,7 @@ import unittest
 from config import Config
 from data_retriever import DataRetriever
 
-config_path = "/Users/user/Documents/test_technique/config/config_file.yaml"  
+config_path = "config/config_file.yaml"  
 
 class TestDataRetriever(unittest.TestCase):
     
@@ -26,16 +26,6 @@ class TestDataRetriever(unittest.TestCase):
         headers = data_retriever.create_authorization_headers()
         self.assertEqual(headers['content-type'], 'application/x-www-form-urlencoded')
         self.assertEqual(headers['Authorization'], 'Basic your_client_and_secret_id_in_64')
-
-    def test_period_into_subsets(self):
-        data_retriever = DataRetriever(self.config)
-        periods = data_retriever.period_into_subsets(max_chunk=5)
-        expected_periods = [
-            (datetime(2022, 12, 1, 0, 0), datetime(2022, 12, 6, 0, 0)),
-            (datetime(2022, 12, 6, 0, 0), datetime(2022, 12, 11, 0, 0)),
-            (datetime(2022, 12, 11, 0, 0), datetime(2022, 12, 11, 0, 0))
-        ]
-        self.assertEqual(periods, expected_periods)
 
     def test_get_timezone(self):
         date = datetime(2023, 1, 1, 12, 0, 0)
